@@ -4,8 +4,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const logButton = document.getElementById('logButton');
     const activityLog = document.getElementById('activityLog');
+    const rssLink = document.getElementById('rssLink');
 
     logButton.addEventListener('click', logGeolocation);
+    rssLink.addEventListener('click', downloadRSSFeed);
 
     function logGeolocation() {
         if (navigator.geolocation) {
@@ -50,5 +52,20 @@ document.addEventListener('DOMContentLoaded', () => {
         rssEntry.appendChild(pubDate);
 
         rssFeed.appendChild(rssEntry);
+    }
+
+    function downloadRSSFeed() {
+        const rssFeed = document.getElementById('rssFeed');
+        const xmlContent = `<?xml version="1.0" encoding="UTF-8" ?>\n<rss version="2.0">\n<channel>\n<title>Geolocation RSS Feed</title>\n<link>${window.location.href}</link>\n<description>Logged geolocations</description>\n${rssFeed.innerHTML}\n</channel>\n</rss>`;
+
+        const blob = new Blob([xmlContent], { type: 'application/rss+xml' });
+        const url = URL.createObjectURL(blob);
+
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = 'geolocation_feed.xml';
+        downloadLink.click();
+
+        URL.revokeObjectURL(url);
     }
 });
